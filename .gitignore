@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+# Build directories
+android/app/build/
+ios/build/
+ios/Pods/
+
+# Logs
+*.log
+
+# React Native specific
+.expo/
+*.expo
+.expo-shared/
+
+# Environment files (if any)
+.env
+.env.*
+
+# Miscellaneous
+.DS_Store
+*.swp

@@ -1,0 +1,15 @@
+current directory: /Users/School/dissertation/Healthcare/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+/Users/School/.rbenv/versions/3.1.0/bin/ruby -I /Users/School/.rbenv/versions/3.1.0/lib/ruby/3.1.0 -r ./siteconf20241207-96796-g3m81c.rb extconf.rb
+creating Makefile
+
+current directory: /Users/School/dissertation/Healthcare/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= clean
+
+current directory: /Users/School/dissertation/Healthcare/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\=
+compiling nkf.c
+linking shared-object nkf.bundle
+
+current directory: /Users/School/dissertation/Healthcare/vendor/bundle/ruby/3.1.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= install
+/opt/homebrew/bin/ginstall -c -m 0755 nkf.bundle ./.gem.20241207-96796-crxo8z
