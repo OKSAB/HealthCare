@@ -101,7 +101,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   };
 
   const handleSave = async () => {
-    if (!editedProfile || !userEmail) return;
+    if (!editedProfile || !userEmail) {return;}
     setIsLoading(true);
     try {
       const response = await fetch(`http://127.0.0.1:8000/users/${userEmail}`, {

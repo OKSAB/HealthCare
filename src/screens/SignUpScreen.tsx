@@ -91,17 +91,15 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
     }
   };
 
-  // We want the unit to remain as registered, so do nothing on press.
-  // Instead of calling toggleUnit, we use a no-op.
-  const handleUnitPress = () => {};
+  // For Height and Weight unit, we want to keep the registered unit unchanged, so we use a no-op in the onPress.
 
   const handleSignUp = async () => {
     const newErrors: {[key: string]: string} = {};
     setIsLoading(true);
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    if (!formData.firstName) {newErrors.firstName = 'First name is required';}
+    if (!formData.lastName) {newErrors.lastName = 'Last name is required';}
     if (!formData.dob || formData.dob.length !== 10)
-      newErrors.dob = 'Valid date required (MM/DD/YYYY)';
+      {newErrors.dob = 'Valid date required (MM/DD/YYYY)';}
     if (!formData.height) {
       newErrors.height = 'Height is required';
     } else if (!validateDecimalNumber(formData.height)) {
