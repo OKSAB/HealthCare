@@ -33,12 +33,6 @@ interface SignUpScreenProps {
 
 const {width, height} = Dimensions.get('window');
 
-// Helper to validate DOB in MM/DD/YYYY format with valid month/day
-const validateDOBFormat = (dob: string): boolean => {
-  const dobRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-  return dobRegex.test(dob);
-};
-
 const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
   const {setUserEmail} = useAuth();
   const [formData, setFormData] = useState({
@@ -46,9 +40,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
     lastName: '',
     dob: '',
     height: '',
-    heightUnit: 'FT', // toggles between 'FT' and 'CM'
+    heightUnit: 'FT',
     weight: '',
-    weightUnit: 'KG', // toggles between 'KG' and 'lb'
+    weightUnit: 'KG',
     email: '',
     password: '',
     confirmPassword: '',
@@ -97,29 +91,18 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
     }
   };
 
+  // No unit toggle change since we want the registered units to be used as is.
   const toggleUnit = (field: 'heightUnit' | 'weightUnit') => {
-    if (field === 'heightUnit') {
-      setFormData({
-        ...formData,
-        heightUnit: formData.heightUnit === 'FT' ? 'CM' : 'FT',
-      });
-    } else {
-      setFormData({
-        ...formData,
-        weightUnit: formData.weightUnit === 'KG' ? 'lb' : 'KG',
-      });
-    }
+    // Do nothing; keep the original unit provided.
   };
 
   const handleSignUp = async () => {
     const newErrors: {[key: string]: string} = {};
     setIsLoading(true);
-
     if (!formData.firstName) newErrors.firstName = 'First name is required';
     if (!formData.lastName) newErrors.lastName = 'Last name is required';
-    if (!validateDOBFormat(formData.dob))
-      newErrors.dob =
-        'DOB must be in MM/DD/YYYY format with valid month and day';
+    if (!formData.dob || formData.dob.length !== 10)
+      newErrors.dob = 'Valid date required (MM/DD/YYYY)';
     if (!formData.height) {
       newErrors.height = 'Height is required';
     } else if (!validateDecimalNumber(formData.height)) {
@@ -143,14 +126,11 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords must match';
     }
-
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length === 0) {
       try {
         const heightStr = `${formData.height} ${formData.heightUnit}`;
         const weightStr = `${formData.weight} ${formData.weightUnit}`;
-
         const response = await fetch('http://127.0.0.1:8000/signup', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -164,24 +144,18 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
             weight: weightStr,
           }),
         });
-
         if (!response.ok) {
           const data = await response.json();
-          setErrors({
-            ...newErrors,
-            submit: data.detail || 'Failed to sign up',
-          });
+          setErrors({...newErrors, submit: data.detail || 'Failed to sign up'});
         } else {
           Alert.alert('Success', 'Signed up successfully!');
-          // Store the email globally and navigate to Dashboard
           setUserEmail(formData.email);
           navigation.replace('Dashboard');
         }
       } catch (error: any) {
-        setErrors({...newErrors, submit: 'Network error or server down'});
+        setErrors({...newErrors, submit: 'Network error or server is down'});
       }
     }
-
     setIsLoading(false);
   };
 
@@ -344,10 +318,10 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              style={{marginTop: 20}}
+              style={styles.linkContainer}
               onPress={() => navigation.navigate('SignIn')}
               disabled={isLoading}>
-              <Text style={{color: '#FFF', textAlign: 'center'}}>
+              <Text style={styles.linkText}>
                 Already have an account? Sign In
               </Text>
             </TouchableOpacity>
@@ -411,4 +385,6 @@ const styles = StyleSheet.create({
   },
   unitButton: {backgroundColor: '#444', borderRadius: 8, padding: 10},
   unitButtonText: {color: '#fff', fontSize: Math.min(width * 0.04, 16)},
+  linkContainer: {marginTop: 20},
+  linkText: {color: '#FFF', textAlign: 'center'},
 });

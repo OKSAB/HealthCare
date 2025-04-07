@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
-  Platform,
   TextInput,
   ScrollView,
   ActivityIndicator,
@@ -34,15 +33,9 @@ interface UserProfile {
   first_name?: string;
   last_name?: string;
   dob?: string;
-  height?: string; // e.g., "5.9 FT" or "180 CM"
-  weight?: string; // e.g., "80 KG" or "176 lb"
+  height?: string;
+  weight?: string;
 }
-
-// Helper to validate DOB in MM/DD/YYYY format with valid month/day
-const validateDOBFormat = (dob: string): boolean => {
-  const dobRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-  return dobRegex.test(dob);
-};
 
 const {width, height} = Dimensions.get('window');
 
@@ -77,6 +70,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
 
   useEffect(() => {
     fetchUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleBack = () => {
@@ -108,29 +102,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
 
   const handleSave = async () => {
     if (!editedProfile || !userEmail) return;
-    // Validate DOB format
-    if (!validateDOBFormat(editedProfile.dob || '')) {
-      Alert.alert(
-        'Error',
-        'DOB must be in MM/DD/YYYY format with valid month and day',
-      );
-      return;
-    }
-    // Validate that height and weight are numbers (assuming "number unit")
-    const parseMeasurement = (value: string | undefined): number => {
-      if (!value) return NaN;
-      const parts = value.split(' ');
-      return Number(parts[0]);
-    };
-    if (isNaN(parseMeasurement(editedProfile.height))) {
-      Alert.alert('Error', 'Height must be a valid number');
-      return;
-    }
-    if (isNaN(parseMeasurement(editedProfile.weight))) {
-      Alert.alert('Error', 'Weight must be a valid number');
-      return;
-    }
-
     setIsLoading(true);
     try {
       const response = await fetch(`http://127.0.0.1:8000/users/${userEmail}`, {
@@ -186,20 +157,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
     );
   };
 
-  // Custom render for measurement fields; here we simply display the stored string
-  const renderMeasurementField = (
-    label: string,
-    value: string | undefined,
-    onChange: (val: string) => void,
-    editable: boolean,
-  ) => {
-    return renderField(label, value, onChange, editable);
-  };
-
   if (!userProfile || !editedProfile) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={{color: '#FFF', marginTop: 50, textAlign: 'center'}}>
+        <Text style={styles.loadingText}>
           {isLoading ? 'Loading...' : 'No user data found.'}
         </Text>
       </SafeAreaView>
@@ -210,7 +171,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{'< Back'}</Text>
+          <Text style={styles.backText}>{'< Back'}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
         {!isEditing && (
@@ -220,7 +181,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
         )}
         {isEditing && <View style={styles.editButton} />}
       </View>
-
       <ScrollView style={styles.content}>
         <View style={styles.infoContainer}>
           {renderField('Email', editedProfile.email, () => {}, false)}
@@ -242,13 +202,13 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
             val => setEditedProfile({...editedProfile, dob: val}),
             isEditing,
           )}
-          {renderMeasurementField(
+          {renderField(
             'Height',
             editedProfile.height,
             val => setEditedProfile({...editedProfile, height: val}),
             isEditing,
           )}
-          {renderMeasurementField(
+          {renderField(
             'Weight',
             editedProfile.weight,
             val => setEditedProfile({...editedProfile, weight: val}),
@@ -280,8 +240,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   );
 };
 
-export default ProfileScreen;
-
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#000000'},
   header: {
@@ -291,10 +249,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.06,
     paddingTop: Platform.OS === 'ios' ? 0 : 20,
     height: 60,
-    backgroundColor: '#000000',
   },
   backButton: {padding: 10},
-  backButtonText: {color: '#FFFFFF', fontSize: 16},
+  backText: {color: '#FFF', fontSize: 16},
   headerTitle: {color: '#FFFFFF', fontSize: 20, fontWeight: '600'},
   editButton: {padding: 10},
   editButtonText: {color: '#FFFFFF', fontSize: 16},
@@ -324,6 +281,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     alignItems: 'center',
   },
+  saveButtonText: {color: '#FFFFFF', fontSize: 16, fontWeight: '600'},
   discardButton: {
     backgroundColor: '#333333',
     borderRadius: 8,
@@ -332,6 +290,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignItems: 'center',
   },
-  saveButtonText: {color: '#FFFFFF', fontSize: 16, fontWeight: '600'},
   discardButtonText: {color: '#FFFFFF', fontSize: 16, fontWeight: '600'},
+  loadingText: {color: '#FFF', marginTop: 50, textAlign: 'center'},
 });
+
+export default ProfileScreen;

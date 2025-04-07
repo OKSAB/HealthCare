@@ -15,9 +15,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import PersonIcon from '../../Images/person.svg';
-import SendIcon from '../../Images/send.svg';
-import {User, Clock, LogOut} from 'lucide-react-native';
+import {UserCircle, User, Clock, LogOut, Send} from 'lucide-react-native';
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -42,7 +40,7 @@ interface Message {
 
 const {height} = Dimensions.get('window');
 
-// Replace this URL with your public API URL if needed
+// Replace this URL with your API endpoint
 const API_URL = 'https://7cb9-34-142-242-15.ngrok-free.app/ask';
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
@@ -53,7 +51,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     {sender: 'system', text: 'How are you feeling today?'},
   ]);
   const [inputText, setInputText] = useState('');
-
   const scrollViewRef = useRef<ScrollView>(null);
 
   const toggleMenu = () => {
@@ -80,6 +77,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     inputRange: [0, 1],
     outputRange: [-50, 0],
   });
+
   const menuOpacity = menuAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
@@ -142,7 +140,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     <TouchableWithoutFeedback onPress={closeMenu}>
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
@@ -150,8 +147,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
               style={styles.profileIcon}
               onPress={toggleMenu}
               activeOpacity={0.7}>
-              <PersonIcon width={28} height={28} fill="#FFFFFF" />
+              <UserCircle size={28} color="#FFFFFF" />
             </TouchableOpacity>
+
             <Animated.View
               style={[
                 styles.dropdownMenu,
@@ -225,14 +223,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
             style={styles.sendButton}
             onPress={handleSendMessage}
             activeOpacity={0.7}>
-            <View style={styles.sendButtonInner}>
-              <SendIcon
-                width={20}
-                height={20}
-                fill="#FFFFFF"
-                style={styles.sendIcon}
-              />
-            </View>
+            <Send size={20} color="#FFFFFF" style={styles.sendIcon} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -329,11 +320,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{rotate: '45deg'}],
-  },
-  sendButtonInner: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    transform: [{rotate: '-45deg'}],
   },
   sendIcon: {marginLeft: -2, marginTop: -2},
 });

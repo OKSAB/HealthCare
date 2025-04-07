@@ -1,22 +1,19 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
-  Platform,
-  TextInput,
   ScrollView,
   ActivityIndicator,
   Alert,
+  Dimensions,
+  Platform,
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useAuth} from '../context/AuthContext';
 
 type RootStackParamList = {
-  Dashboard: {chatId?: number; chatTitle?: string} | undefined;
   History: undefined;
 };
 
@@ -25,231 +22,142 @@ type HistoryScreenNavigationProp = NativeStackNavigationProp<
   'History'
 >;
 
+interface HistoryScreenProps {
+  navigation: HistoryScreenNavigationProp;
+}
+
 interface Chat {
   id: number;
   title: string;
   created_at: string;
+  messages: Array<{sender: string; text: string}>;
 }
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-const HistoryScreen: React.FC<{navigation: HistoryScreenNavigationProp}> = ({
-  navigation,
-}) => {
-  const {userEmail} = useAuth();
+const HistoryScreen: React.FC<HistoryScreenProps> = ({navigation}) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingChatId, setEditingChatId] = useState<number | null>(null);
-  const [editedTitle, setEditedTitle] = useState('');
 
-  const fetchChats = async () => {
-    if (!userEmail) {
-      Alert.alert('Error', 'No userEmail found in global context');
-      return;
-    }
+  const fetchChats = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/chats?email=${encodeURIComponent(userEmail)}`,
-      );
+      const response = await fetch('http://127.0.0.1:8000/chats');
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || 'Failed to fetch chats');
+        throw new Error('Failed to fetch chats');
       }
       const data = await response.json();
-      setChats(
-        data.sort(
-          (a: Chat, b: Chat) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        ),
-      );
+      setChats(data);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [fetchChats]);
 
-  const openChat = (chat: Chat) => {
-    navigation.navigate('Dashboard', {chatId: chat.id, chatTitle: chat.title});
-  };
-
-  const startEditing = (chat: Chat) => {
-    setEditingChatId(chat.id);
-    setEditedTitle(chat.title);
-  };
-
-  const submitTitleChange = async (chatId: number) => {
-    if (!editedTitle.trim()) {
-      Alert.alert('Error', 'Title cannot be empty.');
-      return;
-    }
+  const handleDeleteChat = async (chatId: number) => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/chats/${chatId}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({title: editedTitle}),
+        method: 'DELETE',
       });
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || 'Failed to update title');
+        throw new Error('Failed to delete chat');
       }
-      setEditingChatId(null);
       fetchChats();
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
 
-  const deleteChat = (chatId: number) => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete this chat?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await fetch(
-                `http://127.0.0.1:8000/chats/${chatId}`,
-                {
-                  method: 'DELETE',
-                },
-              );
-              if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.detail || 'Failed to delete chat');
-              }
-              fetchChats();
-            } catch (error: any) {
-              Alert.alert('Error', error.message);
-            }
-          },
-        },
-      ],
-    );
+  const handleRenameChat = async (chatId: number, newTitle: string) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/chats/${chatId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({title: newTitle}),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to rename chat');
+      }
+      fetchChats();
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header with Back Button */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}>
-          <Text style={styles.backButtonText}>{'< Back'}</Text>
+          <Text style={styles.backText}>{'< Back'}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chat History</Text>
+        {/* Empty view for alignment */}
+        <View style={styles.backButton} />
       </View>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#FFFFFF" style={styles.loader} />
+        <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
         <ScrollView contentContainerStyle={styles.chatList}>
           {chats.map(chat => (
             <View key={chat.id} style={styles.chatItem}>
-              <TouchableOpacity
-                style={styles.chatInfo}
-                onPress={() => openChat(chat)}>
-                <Text style={styles.chatTitle}>
-                  {editingChatId === chat.id ? (
-                    <TextInput
-                      style={styles.editInput}
-                      value={editedTitle}
-                      onChangeText={setEditedTitle}
-                      onSubmitEditing={() => submitTitleChange(chat.id)}
-                      onBlur={() => submitTitleChange(chat.id)}
-                    />
-                  ) : (
-                    chat.title
-                  )}
-                </Text>
-                <Text style={styles.chatDate}>
-                  {new Date(chat.created_at).toLocaleString()}
-                </Text>
-              </TouchableOpacity>
+              <Text style={styles.chatTitle}>{chat.title}</Text>
+              <Text style={styles.chatDate}>{chat.created_at}</Text>
               <View style={styles.chatActions}>
-                {editingChatId !== chat.id && (
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => startEditing(chat)}>
-                    <Text style={styles.actionText}>Rename</Text>
-                  </TouchableOpacity>
-                )}
                 <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={() => deleteChat(chat.id)}>
-                  <Text style={[styles.actionText, {color: '#FF4444'}]}>
+                  onPress={() => handleRenameChat(chat.id, 'New Title')}>
+                  <Text style={styles.actionText}>Rename</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteChat(chat.id)}>
+                  <Text style={[styles.actionText, styles.deleteText]}>
                     Delete
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
           ))}
-          {chats.length === 0 && (
-            <Text style={styles.noChatsText}>
-              No chats found. Start a conversation!
-            </Text>
-          )}
         </ScrollView>
       )}
     </SafeAreaView>
   );
 };
 
-export default HistoryScreen;
-
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#000000'},
+  container: {flex: 1, backgroundColor: '#000000', padding: 20},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    paddingHorizontal: width * 0.06,
     paddingTop: Platform.OS === 'ios' ? 0 : 20,
     height: 60,
-    backgroundColor: '#000000',
   },
-  backButton: {padding: 8},
-  backButtonText: {color: '#FFFFFF', fontSize: 16},
-  headerTitle: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  loader: {marginTop: 50},
-  chatList: {paddingHorizontal: 20, paddingBottom: 40},
+  backButton: {padding: 10},
+  backText: {color: '#FFF', fontSize: 16},
+  headerTitle: {color: '#FFFFFF', fontSize: 20, fontWeight: '600'},
+  chatList: {paddingBottom: 20},
   chatItem: {
     backgroundColor: '#1A1A1A',
-    borderRadius: 10,
     padding: 15,
+    borderRadius: 10,
     marginBottom: 15,
+  },
+  chatTitle: {color: '#FFFFFF', fontSize: 18, marginBottom: 5},
+  chatDate: {color: '#AAAAAA', fontSize: 14},
+  chatActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: 10,
   },
-  chatInfo: {flex: 1},
-  chatTitle: {color: '#FFFFFF', fontSize: 18, fontWeight: '500'},
-  chatDate: {color: '#888888', fontSize: 14, marginTop: 4},
-  chatActions: {flexDirection: 'row', alignItems: 'center', marginLeft: 10},
-  actionButton: {marginLeft: 10},
   actionText: {color: '#007AFF', fontSize: 16},
-  editInput: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#007AFF',
-    padding: 0,
-  },
-  noChatsText: {
-    color: '#FFF',
-    textAlign: 'center',
-    marginTop: 30,
-    fontSize: 16,
-  },
+  deleteText: {color: '#FF4444'},
 });
+
+export default HistoryScreen;
