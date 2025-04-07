@@ -1,12 +1,8 @@
-// jest-setup.js
-
-// Activate fake timers so asynchronous animation timers are controlled
-jest.useFakeTimers();
-
-// Import the gesture handler setup for react-native-gesture-handler
+/* global jest */
 import 'react-native-gesture-handler/jestSetup';
 
-// Import Animated from react-native and override its methods using Object.defineProperty
+jest.useFakeTimers();
+
 import { Animated } from 'react-native';
 
 // Override Animated.sequence
@@ -18,7 +14,9 @@ Object.defineProperty(Animated, 'sequence', {
           anim.start();
         }
       });
-      if (callback) callback();
+      if (callback) {
+        callback();
+      }
     },
   }),
   writable: true,
@@ -33,7 +31,9 @@ Object.defineProperty(Animated, 'parallel', {
           anim.start();
         }
       });
-      if (callback) callback();
+      if (callback) {
+        callback();
+      }
     },
   }),
   writable: true,
@@ -44,7 +44,9 @@ Object.defineProperty(Animated, 'timing', {
   value: (value, config) => ({
     start: (callback) => {
       value.setValue(config.toValue);
-      if (callback) callback();
+      if (callback) {
+        callback();
+      }
     },
   }),
   writable: true,
@@ -55,7 +57,9 @@ Object.defineProperty(Animated, 'spring', {
   value: (value, config) => ({
     start: (callback) => {
       value.setValue(config.toValue);
-      if (callback) callback();
+      if (callback) {
+        callback();
+      }
     },
   }),
   writable: true,
