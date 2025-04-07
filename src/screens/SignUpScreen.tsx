@@ -91,10 +91,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
     }
   };
 
-  // No unit toggle change since we want the registered units to be used as is.
-  const toggleUnit = (field: 'heightUnit' | 'weightUnit') => {
-    // Do nothing; keep the original unit provided.
-  };
+  // We want the unit to remain as registered, so do nothing on press.
+  // Instead of calling toggleUnit, we use a no-op.
+  const handleUnitPress = () => {};
 
   const handleSignUp = async () => {
     const newErrors: {[key: string]: string} = {};
@@ -222,9 +221,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
                   onChangeText={text => handleNumberInput(text, 'height')}
                   keyboardType="decimal-pad"
                 />
-                <TouchableOpacity
-                  style={styles.unitButton}
-                  onPress={() => toggleUnit('heightUnit')}>
+                <TouchableOpacity style={styles.unitButton} onPress={() => {}}>
                   <Text style={styles.unitButtonText}>
                     {formData.heightUnit}
                   </Text>
@@ -245,9 +242,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
                   onChangeText={text => handleNumberInput(text, 'weight')}
                   keyboardType="decimal-pad"
                 />
-                <TouchableOpacity
-                  style={styles.unitButton}
-                  onPress={() => toggleUnit('weightUnit')}>
+                <TouchableOpacity style={styles.unitButton} onPress={() => {}}>
                   <Text style={styles.unitButtonText}>
                     {formData.weightUnit}
                   </Text>

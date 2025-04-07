@@ -37,7 +37,7 @@ interface UserProfile {
   weight?: string;
 }
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const {userEmail} = useAuth();

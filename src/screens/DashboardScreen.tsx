@@ -39,8 +39,6 @@ interface Message {
 }
 
 const {height} = Dimensions.get('window');
-
-// Replace this URL with your API endpoint
 const API_URL = 'https://7cb9-34-142-242-15.ngrok-free.app/ask';
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
@@ -77,7 +75,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     inputRange: [0, 1],
     outputRange: [-50, 0],
   });
-
   const menuOpacity = menuAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
@@ -104,7 +101,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
       Alert.alert('Please enter a message.');
       return;
     }
-
     const userMessage: Message = {sender: 'user', text: inputText.trim()};
     setMessages(prev =>
       prev.length === 1 &&
@@ -115,7 +111,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     );
     setInputText('');
     scrollViewRef.current?.scrollToEnd({animated: true});
-
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -140,6 +135,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
     <TouchableWithoutFeedback onPress={closeMenu}>
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
+
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
@@ -149,14 +145,13 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
               activeOpacity={0.7}>
               <UserCircle size={28} color="#FFFFFF" />
             </TouchableOpacity>
-
             <Animated.View
               style={[
                 styles.dropdownMenu,
+                isMenuVisible ? styles.dropdownVisible : styles.dropdownHidden,
                 {
                   opacity: menuOpacity,
                   transform: [{translateY: menuTranslateY}],
-                  display: isMenuVisible ? 'flex' : 'none',
                 },
               ]}>
               <TouchableOpacity
@@ -267,6 +262,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  dropdownVisible: {display: 'flex'},
+  dropdownHidden: {display: 'none'},
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
