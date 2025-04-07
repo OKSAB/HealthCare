@@ -2,9 +2,13 @@
   "name": "Healthcare",
   "version": "0.0.1",
   "private": true,
-"scripts": {
-  "build": "echo 'No build step defined for React Native'"
-},
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "react-native start",
+    "test": "jest"
+  },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-masked-view/masked-view": "^0.3.2",
