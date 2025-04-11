@@ -217,7 +217,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
           <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSendMessage}
-            activeOpacity={0.7}>
+            activeOpacity={0.7}
+            testID="sendButton">
             <Send size={20} color="#FFFFFF" style={styles.sendIcon} />
           </TouchableOpacity>
         </View>

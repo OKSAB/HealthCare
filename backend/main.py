@@ -4,8 +4,9 @@ from typing import Optional
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from sqladmin import Admin, ModelView
-from database import SessionLocal, engine, Base
-from models import User  # Make sure your models.py has height & weight columns
+# ✅ Absolute import that works with PYTHONPATH=.
+from backend.database import SessionLocal, engine, Base
+from backend.models import User
 
 app = FastAPI()
 

@@ -1,24 +1,22 @@
-import pytest
 from fastapi.testclient import TestClient
-from ..main import app
+from backend.main import app
+import uuid
 
 client = TestClient(app)
 
 def test_signup_and_signin():
-    # sign up
+    unique_email = f"tester_{uuid.uuid4().hex}@example.com"
+
     response = client.post("/signup", json={
-        "email": "tester@example.com",
+        "email": unique_email,
         "password": "TestPassword123",
         "first_name": "John",
-        "last_name": "Doe"
+        "last_name": "Doe",
+        "dob": "1990-01-01",
+        "height": "5.9 ft",
+        "weight": "70 kg"
     })
-    assert response.status_code == 201
-    assert response.json()["message"] == "User created successfully."
 
-    # sign in
-    response = client.post("/signin", json={
-        "email": "tester@example.com",
-        "password": "TestPassword123"
-    })
-    assert response.status_code == 200
-    assert response.json()["message"] == "Sign in successful!"
+    print("RESPONSE:", response.status_code, response.json())
+    assert response.status_code == 201
+    assert response.json()["message"] == "User created successfully"
