@@ -12,9 +12,12 @@ import {
   Platform,
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useAppData} from '../context/AppData';
+import {config} from '../../config';
 
 type RootStackParamList = {
   History: undefined;
+  Dashboard: undefined;
 };
 
 type HistoryScreenNavigationProp = NativeStackNavigationProp<
@@ -36,46 +39,47 @@ interface Chat {
 const {width} = Dimensions.get('window');
 
 const HistoryScreen: React.FC<HistoryScreenProps> = ({navigation}) => {
-  const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const {api} = config;
+  const {chats, deleteConversation, setActiveConversation} = useAppData();
 
-  const fetchChats = useCallback(async () => {
-    setIsLoading(true);
+  // const fetchChats = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch('http://127.0.0.1:8000/chats');
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch chats');
+  //     }
+  //     const data = await response.json();
+  //     setChats(data);
+  //   } catch (error: any) {
+  //     Alert.alert('Error', error.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   fetchChats();
+  // }, [fetchChats]);
+
+  const handleDeleteChat = async (chatId: string) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/chats');
-      if (!response.ok) {
-        throw new Error('Failed to fetch chats');
-      }
-      const data = await response.json();
-      setChats(data);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchChats();
-  }, [fetchChats]);
-
-  const handleDeleteChat = async (chatId: number) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/chats/${chatId}`, {
+      const response = await fetch(`${api}/conversation/${chatId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
         throw new Error('Failed to delete chat');
       }
-      fetchChats();
+      deleteConversation(chatId);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
 
-  const handleRenameChat = async (chatId: number, newTitle: string) => {
+  const handleRenameChat = async (chatId: string, newTitle: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/chats/${chatId}`, {
+      const response = await fetch(`${api}/chats/${chatId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({title: newTitle}),
@@ -83,7 +87,7 @@ const HistoryScreen: React.FC<HistoryScreenProps> = ({navigation}) => {
       if (!response.ok) {
         throw new Error('Failed to rename chat');
       }
-      fetchChats();
+      // fetchChats();
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -106,23 +110,30 @@ const HistoryScreen: React.FC<HistoryScreenProps> = ({navigation}) => {
         <ActivityIndicator size="large" color="#FFFFFF" />
       ) : (
         <ScrollView contentContainerStyle={styles.chatList}>
-          {chats.map(chat => (
-            <View key={chat.id} style={styles.chatItem}>
-              <Text style={styles.chatTitle}>{chat.title}</Text>
-              <Text style={styles.chatDate}>{chat.created_at}</Text>
-              <View style={styles.chatActions}>
-                <TouchableOpacity
-                  onPress={() => handleRenameChat(chat.id, 'New Title')}>
-                  <Text style={styles.actionText}>Rename</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDeleteChat(chat.id)}>
-                  <Text style={[styles.actionText, styles.deleteText]}>
-                    Delete
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
+          {chats &&
+            chats.map(chat => (
+              <TouchableOpacity
+                key={chat.id}
+                style={styles.chatItem}
+                onPress={() => {
+                  setActiveConversation(chat.id);
+                  navigation.navigate('Dashboard');
+                }}>
+                <Text style={styles.chatTitle}>{chat.title}</Text>
+                {/* <Text style={styles.chatDate}>{chat.created_at}</Text> */}
+                <View style={styles.chatActions}>
+                  <TouchableOpacity
+                    onPress={() => handleRenameChat(chat.id, 'New Title')}>
+                    <Text style={styles.actionText}>Rename</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDeleteChat(chat.id)}>
+                    <Text style={[styles.actionText, styles.deleteText]}>
+                      Delete
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            ))}
         </ScrollView>
       )}
     </SafeAreaView>

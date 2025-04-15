@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1744320913582" clover="3.2.0">
-  <project timestamp="1744320913582" name="All files">
+<coverage generated="1744426846427" clover="3.2.0">
+  <project timestamp="1744426846427" name="All files">
     <metrics statements="270" coveredstatements="189" conditionals="168" coveredconditionals="93" methods="63" coveredmethods="33" elements="501" coveredelements="315" complexity="0" loc="270" ncloc="270" packages="3" files="8" classes="8"/>
-    <package name="healthcare">
+    <package name="Healthcare">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="App.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/App.tsx">
+      <file name="App.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/App.tsx">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="13" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
         <line num="16" count="1" type="stmt"/>
       </file>
     </package>
-    <package name="healthcare.src.context">
+    <package name="Healthcare.src.context">
       <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="2"/>
-      <file name="AuthContext.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/context/AuthContext.tsx">
+      <file name="AuthContext.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/context/AuthContext.tsx">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="2"/>
         <line num="8" count="3" type="stmt"/>
         <line num="14" count="5" type="stmt"/>
@@ -21,9 +21,9 @@
         <line num="24" count="18" type="stmt"/>
       </file>
     </package>
-    <package name="healthcare.src.screens">
+    <package name="Healthcare.src.screens">
       <metrics statements="263" coveredstatements="182" conditionals="168" coveredconditionals="93" methods="59" coveredmethods="30"/>
-      <file name="DashboardScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/DashboardScreen.tsx">
+      <file name="DashboardScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/DashboardScreen.tsx">
         <metrics statements="51" coveredstatements="35" conditionals="25" coveredconditionals="16" methods="12" coveredmethods="5"/>
         <line num="41" count="2" type="stmt"/>
         <line num="42" count="2" type="stmt"/>
@@ -77,7 +77,7 @@
         <line num="189" count="5" type="stmt"/>
         <line num="230" count="2" type="stmt"/>
       </file>
-      <file name="HistoryScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/HistoryScreen.tsx">
+      <file name="HistoryScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/HistoryScreen.tsx">
         <metrics statements="36" coveredstatements="18" conditionals="10" coveredconditionals="4" methods="9" coveredmethods="3"/>
         <line num="36" count="2" type="stmt"/>
         <line num="38" count="2" type="stmt"/>
@@ -116,7 +116,7 @@
         <line num="118" count="0" type="stmt"/>
         <line num="132" count="2" type="stmt"/>
       </file>
-      <file name="IntroScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/IntroScreen.tsx">
+      <file name="IntroScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/IntroScreen.tsx">
         <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
         <line num="26" count="2" type="stmt"/>
         <line num="28" count="2" type="stmt"/>
@@ -129,7 +129,7 @@
         <line num="65" count="2" type="stmt"/>
         <line num="89" count="2" type="stmt"/>
       </file>
-      <file name="ProfileScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/ProfileScreen.tsx">
+      <file name="ProfileScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/ProfileScreen.tsx">
         <metrics statements="61" coveredstatements="30" conditionals="48" coveredconditionals="9" methods="15" coveredmethods="3"/>
         <line num="41" count="2" type="stmt"/>
         <line num="43" count="2" type="stmt"/>
@@ -193,7 +193,7 @@
         <line num="217" count="0" type="stmt"/>
         <line num="246" count="2" type="stmt"/>
       </file>
-      <file name="SignInScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/SignInScreen.tsx">
+      <file name="SignInScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/SignInScreen.tsx">
         <metrics statements="26" coveredstatements="22" conditionals="16" coveredconditionals="12" methods="3" coveredmethods="2"/>
         <line num="33" count="2" type="stmt"/>
         <line num="35" count="2" type="stmt"/>
@@ -222,7 +222,7 @@
         <line num="77" count="6" type="stmt"/>
         <line num="139" count="2" type="stmt"/>
       </file>
-      <file name="SignUpScreen.tsx" path="/Volumes/Kali-linux/dissertation2/healthcare/src/screens/SignUpScreen.tsx">
+      <file name="SignUpScreen.tsx" path="/Volumes/Kali-linux/dissertation2/Healthcare/src/screens/SignUpScreen.tsx">
         <metrics statements="79" coveredstatements="67" conditionals="69" coveredconditionals="52" methods="17" coveredmethods="14"/>
         <line num="34" count="2" type="stmt"/>
         <line num="36" count="2" type="stmt"/>

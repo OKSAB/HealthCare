@@ -1,77 +1,16 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from pydantic import BaseModel
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status
 from passlib.context import CryptContext
+from schemas.schemas import UserSignUp,UserSignIn, UserReturn, UserUpdate
+from config.session import get_db
+from models.models import User
 from sqlalchemy.orm import Session
-from sqladmin import Admin, ModelView
-# ✅ Absolute import that works with PYTHONPATH=.
-from backend.database import SessionLocal, engine, Base
-from backend.models import User
 
-app = FastAPI()
+router=APIRouter()
 
-# Create DB tables if they don't exist
-Base.metadata.create_all(bind=engine)
-
-
-# Create admin interface
-# Admin interface for the User model
-# 1) Initialize the Admin object
-admin = Admin(app, engine)
-
-# 2) Define an Admin View for your model
-class UserAdmin(ModelView, model=User):
-    # Optional customizations:
-    column_list = [User.id, User.email, User.first_name, User.last_name, User.dob, User.height, User.weight]
-    name = "User"
-    name_plural = "Users"
-    icon = "fa-solid fa-user"  # optional FontAwesome icon in the UI
-
-# 3) Register the View with Admin
-admin.add_view(UserAdmin)
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-# -------------------
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# -------------------
-# Pydantic Models
-# -------------------
-class UserSignUp(BaseModel):
-    email: str
-    password: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    dob: Optional[str] = None
-    height: Optional[str] = None   # can be float or string
-    weight: Optional[str] = None   # can be float or string
-
-class UserSignIn(BaseModel):
-    email: str
-    password: str
-
-# For updating user
-class UserUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    dob: Optional[str] = None
-    height: Optional[str] = None
-    weight: Optional[str] = None
-
-# -------------------
-# SIGNUP
-# -------------------
-@app.post("/signup", status_code=201)
+@router.post('/signup',status_code=201)
 def sign_up(user: UserSignUp, db: Session = Depends(get_db)):
     # Check if user email already exists
     existing_user = db.query(User).filter(User.email == user.email).first()
@@ -98,12 +37,9 @@ def sign_up(user: UserSignUp, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    return {"message": "User created successfully"}
+    return {"detail": "User created successfully"}
 
-# -------------------
-# SIGNIN
-# -------------------
-@app.post("/signin")
+@router.post("/signin", response_model=UserReturn)
 def sign_in(user: UserSignIn, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if not db_user:
@@ -119,12 +55,9 @@ def sign_in(user: UserSignIn, db: Session = Depends(get_db)):
             detail="Invalid credentials."
         )
 
-    return {"message": "Sign in successful!"}
+    return db_user
 
-# -------------------
-# GET USER DETAILS
-# -------------------
-@app.get("/users/{user_email}")
+@router.get("/users/{user_email}", response_model=UserReturn)
 def get_user_details(user_email: str, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user_email).first()
     if not db_user:
@@ -132,19 +65,9 @@ def get_user_details(user_email: str, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found."
         )
-    return {
-        "email": db_user.email,
-        "first_name": db_user.first_name,
-        "last_name": db_user.last_name,
-        "dob": db_user.dob,
-        "height": db_user.height,
-        "weight": db_user.weight
-    }
+    return db_user
 
-# -------------------
-# UPDATE USER DETAILS
-# -------------------
-@app.put("/users/{user_email}")
+@router.put("/users/{user_email}")
 def update_user_details(user_email: str, updated_data: UserUpdate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user_email).first()
     if not db_user:

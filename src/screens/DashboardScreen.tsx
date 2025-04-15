@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,9 @@ import {
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {UserCircle, User, Clock, LogOut, Send} from 'lucide-react-native';
+import {useAppData} from '../context/AppData';
+import {useAuth} from '../context/AuthContext';
+import {config} from '../../config';
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -34,20 +37,21 @@ interface DashboardScreenProps {
 }
 
 interface Message {
-  sender: 'user' | 'system';
+  chat_type: 'Prompt' | 'Response';
   text: string;
 }
 
 const {height} = Dimensions.get('window');
-const API_URL = 'https://7cb9-34-142-242-15.ngrok-free.app/ask';
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
+  const {activeConversation, updateConversations, setActiveConversation} =
+    useAppData();
+  const {userId} = useAuth();
+  const {api} = config;
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const menuAnimation = useRef(new Animated.Value(0)).current;
-  const [messages, setMessages] = useState<Message[]>([
-    {sender: 'system', text: 'How are you feeling today?'},
-  ]);
+  const [messages, setMessages] = useState(activeConversation);
   const [inputText, setInputText] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -101,28 +105,28 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
       Alert.alert('Please enter a message.');
       return;
     }
-    const userMessage: Message = {sender: 'user', text: inputText.trim()};
-    setMessages(prev =>
-      prev.length === 1 &&
-      prev[0].sender === 'system' &&
-      prev[0].text === 'How are you feeling today?'
-        ? [userMessage]
-        : [...prev, userMessage],
-    );
+    const userMessage: Message = {chat_type: 'Prompt', text: inputText.trim()};
     setInputText('');
     scrollViewRef.current?.scrollToEnd({animated: true});
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${api}/prompt`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({question: userMessage.text}),
+        body: JSON.stringify({
+          text: userMessage.text,
+          conversation_id: messages?.id,
+          user_id: userId,
+        }),
       });
       if (!response.ok) {
         throw new Error('Server error: ' + response.status);
       }
       const data = await response.json();
-      const systemMessage: Message = {sender: 'system', text: data.answer};
-      setMessages(prev => [...prev, systemMessage]);
+
+      updateConversations(data);
+      // setActiveConversation(data.id)
+      // const systemMessage: Message = {chat_type: 'Response', text: data.answer};
+      setMessages(data);
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({animated: true});
       }, 100);
@@ -185,21 +189,27 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
           style={styles.messagesContainer}
           contentContainerStyle={styles.messagesContent}
           ref={scrollViewRef}>
-          {messages.map((msg, index) => (
-            <View
-              key={index}
-              style={[
-                styles.messageBubble,
-                msg.sender === 'user' ? styles.userBubble : styles.systemBubble,
-              ]}>
-              <Text
-                style={
-                  msg.sender === 'user' ? styles.userText : styles.systemText
-                }>
-                {msg.text}
-              </Text>
-            </View>
-          ))}
+          {messages &&
+            messages?.chats &&
+            messages?.chats.map((msg, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.messageBubble,
+                  msg.chat_type === 'Prompt'
+                    ? styles.userBubble
+                    : styles.systemBubble,
+                ]}>
+                <Text
+                  style={
+                    msg.chat_type === 'Prompt'
+                      ? styles.userText
+                      : styles.systemText
+                  }>
+                  {msg.text}
+                </Text>
+              </View>
+            ))}
         </ScrollView>
 
         {/* Input Field Section */}
@@ -217,8 +227,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({navigation}) => {
           <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSendMessage}
-            activeOpacity={0.7}
-            testID="sendButton">
+            activeOpacity={0.7}>
             <Send size={20} color="#FFFFFF" style={styles.sendIcon} />
           </TouchableOpacity>
         </View>

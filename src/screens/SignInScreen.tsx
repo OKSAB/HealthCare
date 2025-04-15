@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../context/AuthContext';
+import {config} from '../../config';
+import {useAppData} from '../context/AppData';
 
 type RootStackParamList = {
   SignIn: undefined;
@@ -33,11 +35,13 @@ interface SignInScreenProps {
 const {width, height} = Dimensions.get('window');
 
 const SignInScreen: React.FC<SignInScreenProps> = ({navigation}) => {
-  const {setUserEmail} = useAuth();
+  const {setUserEmail, setUserId} = useAuth();
+  const {setConversations} = useAppData();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const {api} = config;
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -49,18 +53,21 @@ const SignInScreen: React.FC<SignInScreenProps> = ({navigation}) => {
     setError('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/signin', {
+      const response = await fetch(`${api}/signin`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email, password}),
       });
 
+      const data = await response.json();
       if (!response.ok) {
         const data = await response.json();
         setError(data.detail || 'Sign in failed');
       } else {
         // Sign in success: store email globally and navigate
         setUserEmail(email);
+        setUserId(data.id);
+        setConversations(data.conversations);
         navigation.replace('Dashboard');
       }
     } catch (err) {
