@@ -42,7 +42,7 @@ const HistoryScreen: React.FC<HistoryScreenProps> = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const {api} = config;
   const {chats, deleteConversation, setActiveConversation} = useAppData();
-
+  console.log('chats', chats);
   // const fetchChats = useCallback(async () => {
   //   setIsLoading(true);
   //   try {

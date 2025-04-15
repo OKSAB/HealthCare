@@ -7,7 +7,7 @@ import httpx
 
 
 router=APIRouter()
-response_url="https://2fcb-34-28-216-59.ngrok-free.app/ask"
+response_url="https://c718-34-87-79-119.ngrok-free.app/ask"
 
 @router.post('/prompt',response_model=ConversationReturn, status_code=201)
 async def send_prompt(prompt:ChatInput, db:Session=Depends(get_db)):

@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../context/AuthContext';
-import {config} from '../../config';
 import {useAppData} from '../context/AppData';
+import {config} from '../../config';
 
 type RootStackParamList = {
   SignIn: undefined;
@@ -61,7 +61,6 @@ const SignInScreen: React.FC<SignInScreenProps> = ({navigation}) => {
 
       const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
         setError(data.detail || 'Sign in failed');
       } else {
         // Sign in success: store email globally and navigate
