@@ -49,6 +49,38 @@ HealthCare/ ├── .github/ │ └── workflows/ │ └── ci.yml # C
 - **Python** (v3.10+ recommended)
 - **Git** for version control
 - **Xcode** for iOS development
+- **Google Colab** for iOS development
+- **Ngrok** for iOS development
+- **FastAPI** and **SQLAlchemy** for back-end development
+- **React Native CLI** for front-end development
+- **ChatDoctor** for LLM fine-tuning
+- **SQLite** (or another preferred database) for back-end development
+
+### Ngrok Server Setup:
+
+1. Create an ngrok account via:
+
+https://ngrok.com
+
+2. Install ngrok to your local machine:
+
+brew install ngrok
+
+### Initalize the colab environment:
+
+1. Download and open the colab environment from:
+
+Healthcare/Colab_environment.
+
+2. Download the LLM folder from the following shared link to your google drive:
+
+https://drive.google.com/drive/folders/1YHvSY6nsk_cqgC5Opii5hmsX1h6byuE-?usp=sharing
+
+3. Replace wtih your auth-token from ngrok in the 8th cell of colab environment:
+
+!ngrok config add-authtoken "your_authtoken" in the last cell.
+
+4. Run the colab cell from top to bottom and keep the last cell running
 
 ### Front-End Setup
 
@@ -66,40 +98,58 @@ HealthCare/ ├── .github/ │ └── workflows/ │ └── ci.yml # C
 
 npm install
 
-# or
-
-yarn install
-
-3. Configure Metro for SVGs:
-
-Ensure you have a properly configured metro.config.js (see our repository) and a svg.d.ts file to support SVG imports.
-
-4. Start the Metro Server:
-
-npm start
-
-# or
-
-yarn start
-
-5. Run the iOS App: In a new terminal window:
-
-npm start react-native
-
-### Back-End Setup:
-
-1. Create and Activate a Python Virtual Environment:
+3. Create and Activate a Python Virtual Environment:
 
 python -m venv env
-source env/bin/activate # On Windows: env\Scripts\activate
+source env/bin/activate
 
-2. Install Python Dependencies:
+4. Install Python Dependencies in the root directory:
 
 pip install -r requirements.txt
 
-3. Run the FastAPI Application: Navigate to the backend directory and run:
+### Back-End Setup:
 
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+1. Within the created virtual environment keep it activated:
+
+source env/bin/activate # On Windows: env\Scripts\activate
+
+2. Install Python Dependencies in the server directory:
+
+pip install -r requirements.txt
+
+### Application run:
+
+1. Run the colab notebook from top to bottom and copy the ngrok url given from the last cell to chat.py:
+
+NgrokTunnel: "your_ngrok_url.ngrok-free.app" copy to:
+
+chat.py:
+response_url="your_ngrok_url.ngrok-free.app/ask" 2. Run the ngrok server tunnel on a different terminal tab:
+
+ngrok http http://127.0.0.1:8000
+
+3. Replace the ngrok link given to Healthcare/config.js:
+
+api:'your_ngrok_url.ngrok-free.app'
+
+4. Run the colab notebook and copy the ngrok url given from the last cell to chat.py:
+
+NgrokTunnel: "your_ngrok_url.ngrok-free.app" copy to:
+
+chat.py:
+response_url="your_ngrok_url.ngrok-free.app/ask"
+
+5. Run the server uvicorn server on a different terminal tab from the directory Healthcare/server:
+
+uvicorn app:app --reload
+
+6. Open a simulator:
+
+open -a simulator
+
+7. Run the npm start command on your terminal:
+
+npm start react-native
 
 ### CI/CD Pipeline:
 
@@ -116,12 +166,7 @@ The project includes a GitHub Actions pipeline configured in .github/workflows/c
 - Chat History:
   The HistoryScreen displays past chats. Users can view, rename, or delete previous conversations.
 
-### Troubleshooting:
-
-- SVG Rendering Issues:
-  Ensure that react-native-svg and react-native-svg-transformer are installed and configured properly. Clear Metro’s cache with:
-
-npx react-native start --reset-cache
+npm react-native start --reset-cache
 
 - Backend Connection Issues:
   Confirm that your FastAPI server is running on the correct host/port (default: http://127.0.0.1:8000) and that the mobile app is configured to use this endpoint.
