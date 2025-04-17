@@ -31,7 +31,75 @@ HealthCare integrates a React Native iOS application with a FastAPI back-end to 
 
 ## Project Structure
 
-HealthCare/ ├── .github/ │ └── workflows/ │ └── ci.yml # CI/CD configuration using GitHub Actions ├── Images/ # Contains custom SVG assets (e.g. person.svg, send.svg) ├── src/ │ ├── context/ │ │ └── AuthContext.tsx # Global authentication context │ ├── screens/ │ │ ├── IntroScreen.tsx # App introduction screen │ │ ├── SignInScreen.tsx # Sign-in screen for existing users │ │ ├── SignUpScreen.tsx # Sign-up screen for new users │ │ ├── DashboardScreen.tsx # Chat interface screen │ │ ├── ProfileScreen.tsx # User profile management screen │ │ └── HistoryScreen.tsx # Chat history screen │ ├── App.tsx # Main app component with navigation and context │ └── ... # Other components and utilities ├── backend/ │ ├── main.py # FastAPI application entry point │ ├── models.py # SQLAlchemy models (User, Chat, etc.) │ └── database.py # Database connection and session setup ├── metro.config.js # Metro configuration (SVG transformer, etc.) ├── svg.d.ts # Type declarations for SVG imports ├── package.json # Node project configuration ├── README.md # This file └── ... # Other configuration files (e.g., .gitignore, CI files)
+## Project Structure
+
+## Project Structure
+
+```
+HealthCare/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                        # CI/CD configuration using GitHub Actions
+├── __mocks__/
+│   └── fileMock.js                       # Jest file mocks
+├── __tests__/
+│   ├── App.test.tsx
+│   ├── DashboardScreen.test.tsx
+│   ├── HistoryScreen.test.tsx
+│   ├── IntroScreen.test.tsx
+│   ├── ProfileScreen.test.tsx
+│   ├── SignInScreen.test.tsx
+│   └── SignUpScreen.test.tsx
+├── Images/                               # Custom SVG assets (person.svg, send.svg, etc.)
+├── src/
+│   ├── context/
+│   │   └── AuthContext.tsx               # Global authentication context
+│   ├── screens/
+│   │   ├── IntroScreen.tsx               # App introduction screen
+│   │   ├── SignInScreen.tsx              # Sign-in screen for existing users
+│   │   ├── SignUpScreen.tsx              # Sign-up screen for new users
+│   │   ├── DashboardScreen.tsx           # Chat interface screen
+│   │   ├── ProfileScreen.tsx             # User profile management screen
+│   │   └── HistoryScreen.tsx             # Chat history screen
+│   ├── App.tsx                           # Main app component with navigation and context
+│   ├── services/                         # Service layer utilities
+│   └── utils/                            # Utility functions and helpers
+├── server/
+│   ├── alembic/                          # Database migration tools
+│   ├── api/
+│   │   ├── chat.py                       # Chat-related API endpoints
+│   │   └── users.py                      # User-related API endpoints
+│   ├── config/
+│   │   └── session.py                    # Session management configuration
+│   ├── models/
+│   │   ├── db.py                         # Database connection management
+│   │   └── models.py                     # Database models
+│   ├── schemas/
+│   │   └── schemas.py                    # Data validation schemas
+│   ├── tests/                            # Backend tests
+│   ├── app.py                            # FastAPI application entry point
+│   ├── database.db                       # SQLite database file
+│   └── requirements.txt                  # Python dependencies
+├── coverage/
+│   ├── lcov-report/                      # Test coverage reports
+│   ├── htmlcov/                          # HTML coverage reports
+│   ├── coverage-final.json
+│   ├── lcov.info
+│   └── clover.xml
+├── Colab_environment/                    # Google Colab notebooks
+│   └── ChatDoctor_LLM_Integration.ipynb
+├── android/                              # Android build configuration
+├── ios/                                  # iOS build configuration
+├── metro.config.js                       # Metro bundler configuration
+├── svg.d.ts                              # SVG imports type declarations
+├── package.json                          # Node.js project configuration
+├── pytest.ini                            # Pytest configuration
+├── tsconfig.json                         # TypeScript configuration
+├── babel.config.js                       # Babel configuration
+├── jest.config.js                        # Jest configuration
+├── README.md                             # Project documentation
+└── ...                                   # Other config files (.gitignore, CI files, etc.)
+```
 
 ## Technologies Used
 
